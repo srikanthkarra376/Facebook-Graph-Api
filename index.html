@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Facebook Login JavaScript Example</title>
+<meta charset="UTF-8">
+</head>
+<style>
+#logoutbtn {
+  display: none;
+
+}
+#status {
+  margin:auto 50px;
+  background-color:#fff;
+}
+#status ul li {
+  list-style-type: none;
+  font-size: 1.5em;
+  padding: 20px;
+}
+#status ul li span {
+  color:rgb(79, 23, 184);
+  font-size:2 em;
+}
+</style>
+
+<body>
+
+<!--JS-->
+<script>
+  function statusChangeCallback(response) {
+   if (response.status === 'connected') {
+    setElements(true);
+    testAPI();
+   } else {
+    document.getElementById("loginbtn").style.display = "block";
+    document.getElementById('status').innerHTML = `Please log into this app.`;
+    }
+  }
+
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+function setElements(isLoggedIn){
+  if(isLoggedIn){
+  document.getElementById("loginbtn").style.display = "none";
+  document.getElementById("logoutbtn").style.display = "block";
+  document.getElementById("status").style.display = "block";
+  document.getElementById("feed").style.display = "block";
+  document.getElementById("taggedplaces").style.display = "block";
+  document.getElementById("logoutbtn").style.display = "block";
+
+} else {
+  document.getElementById("loginbtn").style.display = "block";
+  document.getElementById("logoutbtn").style.display = "block";
+  document.getElementById("status").style.display = "none";
+  document.getElementById("feed").style.display = "none";
+  document.getElementById("taggedplaces").style.display = "none";
+  document.getElementById("logoutbtn").style.display = "none";
+}
+}
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '747227255633558',
+      cookie     : true,  
+      xfbml      : true,  
+      version    : 'v3.2' 
+    });
+
+
+
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  };
+
+  (function(d, s, id) {
+
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  function getTimelineresponse(){
+    FB.api('/me/feed', function(response){
+       if(response && !response.error){
+        let output = '<h3>Latest Posts</h3>';
+        for(let i=0;i<response.data.length;i++){
+          if(response.data[i].message){
+            output += `<li>${response.data[i].message} </li>`;
+          }
+            document.getElementById("feed").innerHTML = output;
+        }
+      }
+    });  
+  };
+  function getTaggedPlaces() {
+    FB.api('/me/tagged_places', function(response){
+       if(response && !response.error){
+        let output = '<h3>Latest Tagged places</h3>';
+        for(let i=0;i<response.data.length;i++){
+          if(response.data[i].place.name){
+            output += `<li>${response.data[i].place.name}</li>`;
+          }
+            document.getElementById("taggedplaces").innerHTML = output;
+        }
+      }
+    });
+
+  }
+     
+ 
+function testAPI() {
+    FB.api('me?fields=name,email,birthday,location,friends', function(response) {
+       getTimelineresponse();
+       getTaggedPlaces();
+        document.getElementById('status').innerHTML =
+       `<ul>
+       <h1>Your Facebook Details:</h1>
+       <li><span>Email:</span><br>${response.email}</li>
+       <li> <span>DOB:</span><br>${response.birthday}</li>
+       <li><span>Location:</span><br>${response.location.name}</li>
+       <li><span>Friends:</span><br>${response.friends.summary.total_count}</li>
+       </ul>`;
+    
+    });
+  }
+  function logout() {
+    FB.logout(function(response) {
+    setElements(false);
+  });
+}
+</script>
+
+<fb:login-button id="loginbtn" scope="public_profile,email,user_friends,user_birthday,user_location,user_posts,user_tagged_places" onlogin="checkLoginState();">
+</fb:login-button>
+<!--status-->
+<div id="status"></div>
+<!--time line feed-->
+<div id="feed"></div>
+<!--tagged places-->
+<div id="taggedplaces"></div>
+<!--logoutbtn-->
+<button id="logoutbtn" onclick="logout()">logout</button>
+</body>
+</html>
