@@ -3,26 +3,41 @@
 <head>
 <title>Facebook Login JavaScript Example</title>
 <meta charset="UTF-8">
-</head>
 <style>
-#logoutbtn {
-  display: none;
+body {
+   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+  #logoutbtn {
+    display: none;
+  
+  }
+  #status {
+    margin:auto 50px;
+    background-color:#fff;
+  }
+  #status ul li {
+    list-style-type: none;
+    font-size: 1.5em;
+    padding: 20px;
+  }
+  #status ul li span {
+    color:rgb(79, 23, 184);
+    font-size:2 em;
+  }
 
+h1 {
+  color:red;
+  margin-left:50px;
 }
-#status {
-  margin:auto 50px;
-  background-color:#fff;
-}
-#status ul li {
-  list-style-type: none;
-  font-size: 1.5em;
-  padding: 20px;
-}
-#status ul li span {
-  color:rgb(79, 23, 184);
-  font-size:2 em;
-}
-</style>
+
+ #taggedplaces ul li{
+    list-style-type: none;
+  }
+
+  </style>
+
+</head>
+
 
 <body>
 
@@ -89,10 +104,14 @@ function setElements(isLoggedIn){
   function getTimelineresponse(){
     FB.api('/me/feed', function(response){
        if(response && !response.error){
-        let output = '<h3>Latest Posts</h3>';
+        let output = `<h1>Latest Posts:</h1>
+        <table ="recentPosts">
+            <th>Your time line Details</th>`;
         for(let i=0;i<response.data.length;i++){
           if(response.data[i].message){
-            output += `<li>${response.data[i].message} </li>`;
+            output += `
+            <tr><td> ${response.data[i].message}</td></tr>
+            </table> <hr>`;
           }
             document.getElementById("feed").innerHTML = output;
         }
@@ -102,12 +121,12 @@ function setElements(isLoggedIn){
   function getTaggedPlaces() {
     FB.api('/me/tagged_places', function(response){
        if(response && !response.error){
-        let output = '<h3>Latest Tagged places</h3>';
+        let output = '<h1>Latest Tagged places</h1>';
         for(let i=0;i<response.data.length;i++){
           if(response.data[i].place.name){
             output += `<li>${response.data[i].place.name}</li>`;
           }
-            document.getElementById("taggedplaces").innerHTML = output;
+            document.getElementById("taggedplaces").innerHTML = output+`<hr>`;
         }
       }
     });
@@ -121,7 +140,7 @@ function testAPI() {
        getTaggedPlaces();
         document.getElementById('status').innerHTML =
        `<ul>
-       <h1>Your Facebook Details:</h1>
+       <h2>Your Facebook Details:</h2>
        <li><span>Email:</span><br>${response.email}</li>
        <li> <span>DOB:</span><br>${response.birthday}</li>
        <li><span>Location:</span><br>${response.location.name}</li>
